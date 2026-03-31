@@ -1,0 +1,776 @@
+====================================
+Testing: data/invoices/invoice_1001.txt
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1001
+Vendor: Widgets Inc.
+Amount: $5000.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1001
+Vendor       : Widgets Inc.
+Amount       : 5000.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues and amount below 10000
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1001', 'vendor': 'Widgets Inc.', 'amount': 5000.0, 'due_date': '2026-02-01', 'items': [{'item': 'WidgetA', 'quantity': 10}, {'item': 'WidgetB', 'quantity': 5}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 10, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 5, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues and amount below 10000'}, 'critique': {'is_sound': True, 'critique': 'Decision matches clean validation with no issues; reasoning correctly cites passed checks and amount under 10000 threshold.'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1002.txt
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : 1002
+Vendor       : Gadgets Co.
+Amount       : 15000.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Requested quantity 20 exceeds available stock 5 for item GadgetX.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical stock mismatch (20 requested vs 5 available)
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': '1002', 'vendor': 'Gadgets Co.', 'amount': 15000.0, 'due_date': '2026-01-30', 'items': [{'item': 'GadgetX', 'quantity': 20}]}, 'validation': {'is_valid': False, 'issues': ['Requested quantity 20 exceeds available stock 5 for item GadgetX.'], 'item_checks': [{'item': 'GadgetX', 'requested': 20, 'available': 5, 'status': 'stock_mismatch'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical stock mismatch (20 requested vs 5 available)'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject matches validation stock mismatch and invoice facts with no contradictions.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1003.txt
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1003
+Vendor       : Fraudster LLC
+Amount       : 100000.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: FakeItem.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical issue: unknown item
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1003', 'vendor': 'Fraudster LLC', 'amount': 100000.0, 'due_date': 'yesterday', 'items': [{'item': 'FakeItem', 'quantity': 100}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: FakeItem.'], 'item_checks': [{'item': 'FakeItem', 'requested': 100, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical issue: unknown item'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject matches validation failure on unknown item; reasoning is consistent with provided issues.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1004_revised.json
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1004
+Vendor: Precision Parts Ltd.
+Amount: $5940.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1004
+Vendor       : Precision Parts Ltd.
+Amount       : 5940.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1004', 'vendor': 'Precision Parts Ltd.', 'amount': 5940.0, 'due_date': '2026-02-22', 'items': [{'item': 'WidgetA', 'quantity': 3}, {'item': 'WidgetB', 'quantity': 2}, {'item': 'GadgetX', 'quantity': 5}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 3, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 2, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 5, 'available': 5, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision to approve matches valid validation with no issues; reasoning accurately reflects no issues and amount under 10000 threshold.'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1004.json
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1004
+Vendor: Precision Parts Ltd.
+Amount: $1890.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1004
+Vendor       : Precision Parts Ltd.
+Amount       : 1890.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1004', 'vendor': 'Precision Parts Ltd.', 'amount': 1890.0, 'due_date': '2026-02-22', 'items': [{'item': 'WidgetA', 'quantity': 3}, {'item': 'WidgetB', 'quantity': 2}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 3, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 2, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision matches validation (no issues) and reasoning is consistent with facts (amount 1890 < 10000)'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1005.json
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1005
+Vendor       : Global Supply Chain Partners
+Amount       : 15225.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Requested quantity 8 exceeds available stock 5 for item GadgetX.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation contains critical stock mismatch for GadgetX
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1005', 'vendor': 'Global Supply Chain Partners', 'amount': 15225.0, 'due_date': '2026-03-18', 'items': [{'item': 'WidgetA', 'quantity': 14}, {'item': 'GadgetX', 'quantity': 8}, {'item': 'WidgetB', 'quantity': 10}]}, 'validation': {'is_valid': False, 'issues': ['Requested quantity 8 exceeds available stock 5 for item GadgetX.'], 'item_checks': [{'item': 'WidgetA', 'requested': 14, 'available': 15, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 8, 'available': 5, 'status': 'stock_mismatch'}, {'item': 'WidgetB', 'requested': 10, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation contains critical stock mismatch for GadgetX'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject is fully consistent with validation issues and item checks showing stock mismatch for GadgetX.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1006.csv
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1006
+Vendor: Acme Industrial Supplies
+Amount: $2750.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1006
+Vendor       : Acme Industrial Supplies
+Amount       : 2750.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1006', 'vendor': 'Acme Industrial Supplies', 'amount': 2750.0, 'due_date': '2026-02-10', 'items': [{'item': 'WidgetA', 'quantity': 5}, {'item': 'WidgetB', 'quantity': 3}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 5, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 3, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision to approve matches clean validation (no issues, items available) and reasoning correctly cites passed checks plus amount under 10000 threshold.'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1007.csv
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1007
+Vendor       : MegaWidgets Corp
+Amount       : 15525.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Requested quantity 20 exceeds available stock 15 for item WidgetA.
+  - Requested quantity 15 exceeds available stock 10 for item WidgetB.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical stock mismatches for WidgetA and WidgetB
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1007', 'vendor': 'MegaWidgets Corp', 'amount': 15525.0, 'due_date': '02/28/2026', 'items': [{'item': 'WidgetA', 'quantity': 20}, {'item': 'WidgetB', 'quantity': 15}, {'item': 'GadgetX', 'quantity': 3}]}, 'validation': {'is_valid': False, 'issues': ['Requested quantity 20 exceeds available stock 15 for item WidgetA.', 'Requested quantity 15 exceeds available stock 10 for item WidgetB.'], 'item_checks': [{'item': 'WidgetA', 'requested': 20, 'available': 15, 'status': 'stock_mismatch'}, {'item': 'WidgetB', 'requested': 15, 'available': 10, 'status': 'stock_mismatch'}, {'item': 'GadgetX', 'requested': 3, 'available': 5, 'status': 'ok'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical stock mismatches for WidgetA and WidgetB'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject is fully consistent with validation failures on stock mismatches for WidgetA and WidgetB; no contradictions with invoice data.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1008.txt
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1008
+Vendor       : NoProd Industries
+Amount       : 9900.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: SuperGizmo.
+  - Unknown item: MegaSprocket.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical issues: unknown items
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1008', 'vendor': 'NoProd Industries', 'amount': 9900.0, 'due_date': '2026-01-20', 'items': [{'item': 'SuperGizmo', 'quantity': 12}, {'item': 'MegaSprocket', 'quantity': 6}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: SuperGizmo.', 'Unknown item: MegaSprocket.'], 'item_checks': [{'item': 'SuperGizmo', 'requested': 12, 'available': None, 'status': 'unknown_item'}, {'item': 'MegaSprocket', 'requested': 6, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical issues: unknown items'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject is consistent with validation failures on unknown items; reasoning directly matches the reported issues with no contradictions.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1009.json
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1009
+Vendor       : None
+Amount       : -250.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Missing required fields: vendor, due_date
+  - Quantity must be positive for item WidgetA.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed: missing vendor/due_date and non-positive quantity for WidgetA
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1009', 'vendor': None, 'amount': -250.0, 'due_date': None, 'items': [{'item': 'WidgetA', 'quantity': -5}, {'item': 'WidgetB', 'quantity': 2}]}, 'validation': {'is_valid': False, 'issues': ['Missing required fields: vendor, due_date', 'Quantity must be positive for item WidgetA.'], 'item_checks': [{'item': 'WidgetA', 'requested': -5, 'available': None, 'status': 'non_positive_quantity'}, {'item': 'WidgetB', 'requested': 2, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed: missing vendor/due_date and non-positive quantity for WidgetA'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject matches validation issues (missing vendor/due_date and non-positive quantity); reasoning is consistent with facts.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1010.txt
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1010
+Vendor       : Consolidated Materials Group
+Amount       : 7185.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: WidgetA (rush order).
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical issue: unknown item WidgetA (rush order)
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1010', 'vendor': 'Consolidated Materials Group', 'amount': 7185.0, 'due_date': 'February 26, 2026', 'items': [{'item': 'WidgetA', 'quantity': 8}, {'item': 'WidgetB', 'quantity': 4}, {'item': 'GadgetX', 'quantity': 2}, {'item': 'WidgetA (rush order)', 'quantity': 4}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: WidgetA (rush order).'], 'item_checks': [{'item': 'WidgetA', 'requested': 8, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 4, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 2, 'available': 5, 'status': 'ok'}, {'item': 'WidgetA (rush order)', 'requested': 4, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical issue: unknown item WidgetA (rush order)'}, 'critique': {'is_sound': True, 'critique': 'Decision matches validation: correctly rejects due to unknown item flagged in issues and item_checks.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1011.pdf
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1011
+Vendor: Summit Manufacturing Co.
+Amount: $3000.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1011
+Vendor       : Summit Manufacturing Co.
+Amount       : 3000.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1011', 'vendor': 'Summit Manufacturing Co.', 'amount': 3000.0, 'due_date': '2026-02-20', 'items': [{'item': 'WidgetA', 'quantity': 6}, {'item': 'WidgetB', 'quantity': 3}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 6, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 3, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision matches validation (no issues, all item checks ok) and reasoning is consistent with facts (amount 3000 is below 10000).'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1011.txt
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1011
+Vendor: Summit Manufacturing Co.
+Amount: $3000.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1011
+Vendor       : Summit Manufacturing Co.
+Amount       : 3000.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1011', 'vendor': 'Summit Manufacturing Co.', 'amount': 3000.0, 'due_date': '2026-02-20', 'items': [{'item': 'WidgetA', 'quantity': 6}, {'item': 'WidgetB', 'quantity': 3}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 6, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 3, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision matches validation (no issues, items available) and reasoning is consistent with facts (amount 3000 under 10000 threshold)'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1012.pdf
+
+--- STARTING PIPELINE ---
+
+Initial JSON parsing failed. Retrying with correction prompt...
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV 1012
+Vendor       : QuickShip Distributers
+Amount       : 9975.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: Widget A.
+  - Unknown item: Gadget X.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with unknown items
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV 1012', 'vendor': 'QuickShip Distributers', 'amount': 9975.0, 'due_date': '25-Feb-2026', 'items': [{'item': 'Widget A', 'quantity': 12}, {'item': 'WidgetB', 'quantity': 7}, {'item': 'Gadget X', 'quantity': 4}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: Widget A.', 'Unknown item: Gadget X.'], 'item_checks': [{'item': 'Widget A', 'requested': 12, 'available': None, 'status': 'unknown_item'}, {'item': 'WidgetB', 'requested': 7, 'available': 10, 'status': 'ok'}, {'item': 'Gadget X', 'requested': 4, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with unknown items'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject matches validation failures on unknown items; reasoning is consistent with no contradictions.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1012.txt
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV 1012
+Vendor       : QuickShip Distributers
+Amount       : 9975.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: Widget A.
+  - Unknown item: Gadget X.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical issues: unknown items
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV 1012', 'vendor': 'QuickShip Distributers', 'amount': 9975.0, 'due_date': '25-Feb-2026', 'items': [{'item': 'Widget A', 'quantity': 12}, {'item': 'WidgetB', 'quantity': 7}, {'item': 'Gadget X', 'quantity': 4}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: Widget A.', 'Unknown item: Gadget X.'], 'item_checks': [{'item': 'Widget A', 'requested': 12, 'available': None, 'status': 'unknown_item'}, {'item': 'WidgetB', 'requested': 7, 'available': 10, 'status': 'ok'}, {'item': 'Gadget X', 'requested': 4, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical issues: unknown items'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject is consistent with validation failures due to unknown items; reasoning accurately reflects the issues.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1013.json
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1013
+Vendor       : Atlas Industrial Supply
+Amount       : 22562.8
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : ESCALATE
+Reason       : Amount exceeds 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1013', 'vendor': 'Atlas Industrial Supply', 'amount': 22562.8, 'due_date': '2026-03-24', 'items': [{'item': 'WidgetA', 'quantity': 15}, {'item': 'WidgetB', 'quantity': 10}, {'item': 'GadgetX', 'quantity': 5}, {'item': 'WidgetA', 'quantity': 5}, {'item': 'WidgetB', 'quantity': 8}, {'item': 'GadgetX', 'quantity': 3}, {'item': 'WidgetA', 'quantity': 2}, {'item': 'GadgetX', 'quantity': 1}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 15, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 10, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 5, 'available': 5, 'status': 'ok'}, {'item': 'WidgetA', 'requested': 5, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 8, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 3, 'available': 5, 'status': 'ok'}, {'item': 'WidgetA', 'requested': 2, 'available': 15, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 1, 'available': 5, 'status': 'ok'}]}, 'approval': {'decision': 'escalate', 'reasoning': 'Amount exceeds 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Escalation consistent with amount >10000; validation has no issues but amount-based policy applies independently'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1013.pdf
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1013
+Vendor       : Atlas Industrial Supply
+Amount       : 22562.8
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : ESCALATE
+Reason       : Amount 22562.8 exceeds 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1013', 'vendor': 'Atlas Industrial Supply', 'amount': 22562.8, 'due_date': '2026-03-24', 'items': [{'item': 'WidgetA', 'quantity': 15}, {'item': 'WidgetB', 'quantity': 10}, {'item': 'GadgetX', 'quantity': 5}, {'item': 'WidgetA', 'quantity': 5}, {'item': 'WidgetB', 'quantity': 8}, {'item': 'GadgetX', 'quantity': 3}, {'item': 'WidgetA', 'quantity': 2}, {'item': 'GadgetX', 'quantity': 1}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 15, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 10, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 5, 'available': 5, 'status': 'ok'}, {'item': 'WidgetA', 'requested': 5, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 8, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 3, 'available': 5, 'status': 'ok'}, {'item': 'WidgetA', 'requested': 2, 'available': 15, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 1, 'available': 5, 'status': 'ok'}]}, 'approval': {'decision': 'escalate', 'reasoning': 'Amount 22562.8 exceeds 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Escalation due to amount >10000 is consistent with invoice facts; validation shows no issues and is independent of the threshold rule.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
+====================================
+Testing: data/invoices/invoice_1014.xml
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1014
+Vendor: TechParts International
+Amount: $4125.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1014
+Vendor       : TechParts International
+Amount       : 4125.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation is_valid=true with no issues; amount 4125 under 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1014', 'vendor': 'TechParts International', 'amount': 4125.0, 'due_date': '2026-02-26', 'items': [{'item': 'WidgetA', 'quantity': 4}, {'item': 'WidgetB', 'quantity': 6}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 4, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 6, 'available': 10, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation is_valid=true with no issues; amount 4125 under 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision to approve matches valid result with no issues; reasoning accurately reflects validation and amount under threshold with no contradictions.'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1015.csv
+
+--- STARTING PIPELINE ---
+
+
+Processing Payment...
+Invoice ID: INV-1015
+Vendor: Reliable Components Inc.
+Amount: $6500.0
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1015
+Vendor       : Reliable Components Inc.
+Amount       : 6500.0
+
+VALIDATION
+------------------------------
+Status       : PASS
+  No issues found
+
+DECISION
+------------------------------
+Decision     : APPROVE
+Reason       : Validation passed with no issues, all items available, amount below 10000 threshold
+
+PAYMENT
+------------------------------
+Status       : PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1015', 'vendor': 'Reliable Components Inc.', 'amount': 6500.0, 'due_date': '2026-02-28', 'items': [{'item': 'WidgetA', 'quantity': 10}, {'item': 'WidgetB', 'quantity': 5}, {'item': 'GadgetX', 'quantity': 2}]}, 'validation': {'is_valid': True, 'issues': [], 'item_checks': [{'item': 'WidgetA', 'requested': 10, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 5, 'available': 10, 'status': 'ok'}, {'item': 'GadgetX', 'requested': 2, 'available': 5, 'status': 'ok'}]}, 'approval': {'decision': 'approve', 'reasoning': 'Validation passed with no issues, all items available, amount below 10000 threshold'}, 'critique': {'is_sound': True, 'critique': 'Decision matches validation (valid, no issues, items available) and invoice facts (amount 6500 under 10000 threshold); no contradictions.'}, 'payment': {'status': 'paid', 'message': 'Payment processed successfully'}}
+
+====================================
+Testing: data/invoices/invoice_1016.json
+
+--- STARTING PIPELINE ---
+
+
+Result logged to run_log.jsonl
+
+==============================
+INVOICE PROCESSING RESULT
+==============================
+
+Invoice ID   : INV-1016
+Vendor       : Widgets Inc.
+Amount       : 3233.0
+
+VALIDATION
+------------------------------
+Status       : FAIL
+Issues:
+  - Unknown item: WidgetC.
+
+DECISION
+------------------------------
+Decision     : REJECT
+Reason       : Validation failed with critical issue: unknown item WidgetC
+
+PAYMENT
+------------------------------
+Status       : NOT PAID
+
+==============================
+
+--- FULL DEBUG OUTPUT ---
+
+{'invoice': {'invoice_id': 'INV-1016', 'vendor': 'Widgets Inc.', 'amount': 3233.0, 'due_date': '2026-02-27', 'items': [{'item': 'WidgetA', 'quantity': 4}, {'item': 'WidgetB', 'quantity': 2}, {'item': 'WidgetC', 'quantity': 3}]}, 'validation': {'is_valid': False, 'issues': ['Unknown item: WidgetC.'], 'item_checks': [{'item': 'WidgetA', 'requested': 4, 'available': 15, 'status': 'ok'}, {'item': 'WidgetB', 'requested': 2, 'available': 10, 'status': 'ok'}, {'item': 'WidgetC', 'requested': 3, 'available': None, 'status': 'unknown_item'}]}, 'approval': {'decision': 'reject', 'reasoning': 'Validation failed with critical issue: unknown item WidgetC'}, 'critique': {'is_sound': True, 'critique': 'Decision to reject is fully consistent with validation failure due to unknown item WidgetC; reasoning matches issues exactly with no contradictions.'}, 'payment': {'status': 'not_paid', 'message': 'Invoice not approved'}}
+
